@@ -1,0 +1,3 @@
+databaseChangeLog:
+  - sqlFile:
+      path: db/changelog/V1__create_documents_table.sql

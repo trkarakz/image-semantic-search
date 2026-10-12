@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/images
+    username: postgres
+    password: postgres
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:change-me}
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
