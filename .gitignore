@@ -1,0 +1,12 @@
+# Gradle
+.gradle/
+build/
+
+# IntelliJ / JetBrains
+.idea/
+*.iml
+out/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
