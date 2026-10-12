@@ -1,5 +1,6 @@
-package com.imagesearch.vektor;
+package com.imagesearch.vector;
 
+import com.imagesearch.embedding.EmbeddingService;
 import com.theokanning.openai.embedding.Embedding;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,17 +12,16 @@ import java.util.stream.Collectors;
 @Component
 public class PostgresVectorStore {
     private final JdbcTemplate jdbcTemplate;
-    private final EmbeddingModel embeddingModel;
+    private final EmbeddingService embeddingService;
 
     @Autowired
-    public PostgresVectorStore(JdbcTemplate jdbcTemplate,
-                               EmbeddingModel embeddingModel) {
+    public PostgresVectorStore(JdbcTemplate jdbcTemplate, EmbeddingService embeddingService) {
         this.jdbcTemplate = jdbcTemplate;
-        this.embeddingModel = embeddingModel;
+        this.embeddingService = embeddingService;
     }
 
     public void indexDocument(String content, String metadata) {
-        Embedding embedding = embeddingModel.embed(content);
+        List<Embedding> embedding = embeddingService.embedText(content);
 
         String sql = "INSERT INTO documents (content, embedding, metadata) " +
                 "VALUES (?, ?::vector, ?::jsonb)";
@@ -30,7 +30,7 @@ public class PostgresVectorStore {
     }
 
     public List<DocumentResult> similaritySearch(String query, int limit) {
-        Embedding queryEmbedding = embeddingModel.embed(query);
+        List<Embedding> queryEmbedding = embeddingService.embedText(query);
 
         String sql = "SELECT id, content, metadata, " +
                 "1 - (embedding <=> ?::vector) as similarity " +
@@ -50,8 +50,8 @@ public class PostgresVectorStore {
         ));
     }
 
-    private String vectorToString(Embedding embedding) {
-        return "[" + embedding.getOutput().stream()
+    private String vectorToString(List<Embedding> embeddings) {
+        return "[" + embeddings.stream()
                 .map(String::valueOf)
                 .collect(Collectors.joining(",")) + "]";
     }
