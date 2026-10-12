@@ -13,12 +13,24 @@ java {
     }
 }
 
-repositories { mavenCentral() }
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
+    maven { url 'https://repo.spring.io/snapshot' }
+    maven {
+        name = 'Central Portal Snapshots'
+        url = 'https://central.sonatype.com/repository/maven-snapshots/'
+    }
+}
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    implementation platform("org.springframework.ai:spring-ai-bom:2.0.0")
+    // Replace the following with the specific module dependencies (e.g., spring-ai-openai) or starter modules (e.g., spring-ai-starter-model-openai) that you wish to use
+    implementation 'org.springframework.ai:spring-ai-openai'
 
     implementation 'com.theokanning.openai-gpt3-java:api:0.18.2'
     implementation 'com.theokanning.openai-gpt3-java:service:0.18.2'
