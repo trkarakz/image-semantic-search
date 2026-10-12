@@ -1,7 +1,9 @@
 # Gradle
+.gradle/
 build/
 
 # IntelliJ / JetBrains
+.idea/
 *.iml
 out/
 
