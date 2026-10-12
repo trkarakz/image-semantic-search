@@ -1,3 +1,4 @@
 databaseChangeLog:
-  - sqlFile:
-      path: db/changelog/V1__create_documents_table.sql
+  - include:
+      file: "create_documents_table.yaml"
+      relativeToChangelogFile: true
