@@ -1,4 +1,4 @@
 package com.imagesearch.vector;
 
-record DocumentResult(int id, String content, double score, String metadata) {
+public record DocumentResult(String id, String assetId, String content, double score, String metadata) {
 }

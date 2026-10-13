@@ -39,7 +39,7 @@ public class PostgresVectorStore implements VectorStore {
     public List<DocumentResult> similaritySearch(String query, int limit) {
         var queryEmbedding = embeddingService.getEmbeddings(query);
 
-        var sql = "SELECT id, content, metadata, " +
+        var sql = "SELECT id, asset_id, content, metadata, " +
                 "1 - (embedding <=> ?::vector) as similarity " +
                 "FROM documents " +
                 "ORDER BY embedding <=> ?::vector " +
@@ -49,8 +49,9 @@ public class PostgresVectorStore implements VectorStore {
                 vectorToString(queryEmbedding.getResult().getOutput()),
                 vectorToString(queryEmbedding.getResult().getOutput()),
                 limit
-        }, (rs, rowNum) -> new DocumentResult(
-                rs.getInt("id"),
+        }, (rs, _) -> new DocumentResult(
+                rs.getString("id"),
+                rs.getString("asset_id"),
                 rs.getString("content"),
                 rs.getDouble("similarity"),
                 rs.getString("metadata")

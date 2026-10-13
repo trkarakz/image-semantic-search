@@ -13,31 +13,21 @@ import java.util.stream.Collectors;
 
 @Service
 public class EmbeddingService {
-    private final EmbeddingModel embeddingModel;
-    private final LoadingCache<String, Object> embeddingCache;
+
+    private final LoadingCache<String, EmbeddingResponse> embeddingCache;
 
     public EmbeddingService(EmbeddingModel embeddingModel) {
-        this.embeddingModel = embeddingModel;
         this.embeddingCache = Caffeine.newBuilder()
                 .maximumSize(1000)
-                .refreshAfterWrite(Duration.ofDays(5))
-                .build(this::buildCacheKey);
+                .expireAfterWrite(Duration.ofDays(5))
+                .build(key -> {
+                    var request = new EmbeddingRequest(Arrays.asList(key.split("\\|\\|")), null);
+                    return embeddingModel.call(request);
+                });
     }
 
     public EmbeddingResponse getEmbeddings(String... texts) {
-        var key = buildCacheKey(texts);
-        var cached = (EmbeddingResponse) embeddingCache.get(key);
-
-        if (cached != null) {
-            return cached;
-        }
-
-        var request = new EmbeddingRequest(Arrays.asList(texts), null);
-        var response = embeddingModel.call(request);
-
-        embeddingCache.put(key, response);
-
-        return response;
+        return embeddingCache.get(buildCacheKey(texts));
     }
 
     private String buildCacheKey(String... texts) {
