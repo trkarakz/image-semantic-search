@@ -37,6 +37,7 @@ dependencies {
     implementation 'org.liquibase:liquibase-core'
     runtimeOnly 'org.postgresql:postgresql'
     implementation 'org.jspecify:jspecify:1.0.0'
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.2.4'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
