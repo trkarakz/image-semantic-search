@@ -1,10 +1,11 @@
 package com.imagesearch.embedding;
 
-import org.springframework.ai.embedding.Embedding;
 import org.springframework.ai.embedding.EmbeddingModel;
+import org.springframework.ai.embedding.EmbeddingRequest;
+import org.springframework.ai.embedding.EmbeddingResponse;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Arrays;
 
 @Service
 public class EmbeddingService {
@@ -14,7 +15,8 @@ public class EmbeddingService {
         this.embeddingModel = embeddingModel;
     }
 
-    public List<Embedding> embedText(String text) {
-        return embeddingModel.embedForResponse(List.of(text)).getResults();
+    public EmbeddingResponse getEmbeddings(String... texts) {
+        EmbeddingRequest request = new EmbeddingRequest(Arrays.asList(texts), null);
+        return embeddingModel.call(request);
     }
 }

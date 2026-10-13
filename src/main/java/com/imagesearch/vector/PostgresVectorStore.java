@@ -1,14 +1,12 @@
 package com.imagesearch.vector;
 
 import com.imagesearch.embedding.EmbeddingService;
-import org.springframework.ai.embedding.Embedding;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Component
 public class PostgresVectorStore implements VectorStore {
@@ -23,16 +21,23 @@ public class PostgresVectorStore implements VectorStore {
 
     @Override
     public void indexDocument(String content, String metadata) {
-        var embedding = embeddingService.embedText(content);
+        var embedding = embeddingService.getEmbeddings(content);
 
-        var sql = "INSERT INTO documents (asset_id, content, embedding, metadata) " +
-                "VALUES (?, ?, ?::vector, ?::jsonb)";
+        var sql = "INSERT INTO documents (id, asset_id, content, embedding, metadata) " +
+                "VALUES (?, ?, ?, ?::vector, ?::jsonb)";
 
-        jdbcTemplate.update(sql, UUID.randomUUID(), content, vectorToString(embedding), metadata);
+        jdbcTemplate.update(
+                sql,
+                UUID.randomUUID(),
+                UUID.randomUUID().toString(),
+                content,
+                vectorToString(embedding.getResult().getOutput()),
+                metadata
+        );
     }
 
     public List<DocumentResult> similaritySearch(String query, int limit) {
-        var queryEmbedding = embeddingService.embedText(query);
+        var queryEmbedding = embeddingService.getEmbeddings(query);
 
         var sql = "SELECT id, content, metadata, " +
                 "1 - (embedding <=> ?::vector) as similarity " +
@@ -41,8 +46,8 @@ public class PostgresVectorStore implements VectorStore {
                 "LIMIT ?";
 
         return jdbcTemplate.query(sql, new Object[]{
-                vectorToString(queryEmbedding),
-                vectorToString(queryEmbedding),
+                vectorToString(queryEmbedding.getResult().getOutput()),
+                vectorToString(queryEmbedding.getResult().getOutput()),
                 limit
         }, (rs, rowNum) -> new DocumentResult(
                 rs.getInt("id"),
@@ -52,10 +57,15 @@ public class PostgresVectorStore implements VectorStore {
         ));
     }
 
-    private String vectorToString(List<Embedding> embeddings) {
-        return "[" + embeddings.stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(",")) + "]";
+    private String vectorToString(float[] embedding) {
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < embedding.length; i++) {
+            if (i > 0) {
+                sb.append(",");
+            }
+            sb.append(embedding[i]);
+        }
+        sb.append("]");
+        return sb.toString();
     }
 }
-
