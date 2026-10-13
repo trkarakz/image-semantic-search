@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.5.6'
+    id 'org.springframework.boot' version '4.1.1'
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -28,15 +28,15 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    implementation platform("org.springframework.ai:spring-ai-bom:2.0.0")
-    // Replace the following with the specific module dependencies (e.g., spring-ai-openai) or starter modules (e.g., spring-ai-starter-model-openai) that you wish to use
-    implementation 'org.springframework.ai:spring-ai-openai'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-api:3.1.1'
 
-    implementation 'com.theokanning.openai-gpt3-java:api:0.18.2'
-    implementation 'com.theokanning.openai-gpt3-java:service:0.18.2'
+    implementation platform("org.springframework.ai:spring-ai-bom:2.0.1")
+    implementation("org.springframework.ai:spring-ai-starter-model-openai")
 
     implementation 'org.liquibase:liquibase-core'
     runtimeOnly 'org.postgresql:postgresql'
+    implementation 'org.jspecify:jspecify:1.0.0'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

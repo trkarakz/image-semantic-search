@@ -3,8 +3,18 @@ spring:
     url: jdbc:postgresql://localhost:5432/images
     username: postgres
     password: postgres
+
   ai:
     openai:
-      api-key: ${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:change-me}
+      api-key: ${OPENAI_API_KEY}
+      embedding:
+        model: text-embedding-3-small
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
