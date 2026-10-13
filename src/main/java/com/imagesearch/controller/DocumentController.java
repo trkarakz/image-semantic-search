@@ -12,7 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/documents")
 public class DocumentController {
 
-    private VectorStore vectorStore;
+    private final VectorStore vectorStore;
+
+    public DocumentController(VectorStore vectorStore) {
+        this.vectorStore = vectorStore;
+    }
 
     @PostMapping("/index")
     public ResponseEntity<String> indexDocument(@RequestBody IndexDocumentRequest request) {
